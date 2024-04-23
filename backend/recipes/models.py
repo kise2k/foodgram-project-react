@@ -2,13 +2,18 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from user.models import User
 
-import constants
+from .constants import (
+    NAME_CONST_CHAR,
+    LENGTH_FOR_ADMIN,
+    SLUG_CONST_CHAR,
+    MIN_CONST_FOR_COOK
+)
 
 
 class Name(models.Model):
     """Абстрактная модель, описывающая имена."""
     name = models.CharField(
-        max_length=constants.NAME_CONST_CHAR,
+        max_length=NAME_CONST_CHAR,
         verbose_name='Название',
     )
 
@@ -17,7 +22,7 @@ class Name(models.Model):
         ordering = ('name', )
 
     def __str__(self):
-        return self.name[:constants.LENGTH_FOR_ADMIN]
+        return self.name[:LENGTH_FOR_ADMIN]
 
 
 class Tag(Name):
@@ -29,7 +34,7 @@ class Tag(Name):
     )
     slug = models.SlugField(
         unique=True,
-        max_length=constants.SLUG_CONST_CHAR,
+        max_length=SLUG_CONST_CHAR,
         verbose_name='Уникальный идентификатор',
     )
 
@@ -41,7 +46,7 @@ class Tag(Name):
 class Ingredient(Name):
     """Модель описывающая игридиенты."""
     measurement_unit = models.CharField(
-        max_length=constants.NAME_CONST_CHAR,
+        max_length=NAME_CONST_CHAR,
         verbose_name='Единица измерения'
     )
 
@@ -76,7 +81,7 @@ class Recipe(Name):
     cooking_time = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(
-                constants.MIN_CONST_FOR_COOK,
+                MIN_CONST_FOR_COOK,
                 message='Минимальное время приготовления составляет 1 мин.'
             )
         ],
