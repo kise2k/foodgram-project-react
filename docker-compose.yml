@@ -1,0 +1,40 @@
+version: '3'
+
+volumes:
+  pg_data_prod:
+  static_prod:
+  media_prod:
+
+services:
+  db:
+    image: postgres:13
+    env_file: .env
+    volumes:
+      - pg_data_prod:/var/lib/postgresql/data
+
+  backend:
+    image: kise2k/foodgram_backend
+    env_file: .env
+    volumes:
+      - static_prod:/static
+      - media_prod:/app/media/
+    depends_on:
+      - db
+
+  frontend:
+    image: kise2k/foodgram_frontend
+    command: cp -r /app/build/. /static/
+    volumes:
+      - static_prod:/static
+
+  nginx:
+    image: kise2k/foodgram_nginx
+    env_file: .env
+    ports:
+      - 8080:80
+    volumes:
+      - static_prod:/static
+      - media_prod:/app/media/
+    depends_on:
+      - backend
+      - frontend

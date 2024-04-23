@@ -35,3 +35,5 @@ sqlparse==0.4.4
 toml==0.10.2
 typing_extensions==4.9.0
 urllib3==1.26.18
+python-dotenv==1.0.1
+psycopg2>=2.8.6
