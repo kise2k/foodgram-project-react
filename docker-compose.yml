@@ -16,7 +16,7 @@ services:
     image: kise2k/foodgram_backend
     env_file: .env
     volumes:
-      - static_prod:/static
+      - static_prod:/backend_static
       - media_prod:/app/media/
     depends_on:
       - db
