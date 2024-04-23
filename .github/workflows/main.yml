@@ -11,7 +11,7 @@ jobs:
         env:
           POSTGRES_USER: foodgram_user
           POSTGRES_PASSWORD: foodgram_password
-          POSTGRES_DB: foodgram
+          POSTGRES_DB: foodgram_user
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -34,7 +34,7 @@ jobs:
       env:
         POSTGRES_USER: foodgram_user
         POSTGRES_PASSWORD: foodgram_password
-        POSTGRES_DB: foodgram
+        POSTGRES_DB: foodgram_user
         DB_HOST: 127.0.0.1
         DB_PORT: 5432
       run: |
