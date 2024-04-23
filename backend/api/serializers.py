@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers
-from rest_framework import status
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework import serializers, status
 from rest_framework.relations import PrimaryKeyRelatedField
+from djoser.serializers import UserCreateSerializer, UserSerializer
 
+from user.models import User
+from user.functions import is_authenticated, Base64ImageField
 from recipes.models import (
     Tag,
     Recipe,
@@ -13,8 +14,6 @@ from recipes.models import (
     Favorite,
     Subscribe
 )
-from user.models import User
-from user.functions import is_authenticated, Base64ImageField
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):

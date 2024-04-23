@@ -1,39 +1,40 @@
-from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
-from django.db.models import Sum
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from djoser.views import UserViewSet
 
 from recipes.models import (
+    Cart,
     Favorite,
     Ingredient,
     Recipe,
-    Cart,
+    Recipe_Ingredients,
+    Subscribe,
     Tag,
     User,
-    Recipe_Ingredients,
-    Subscribe
 )
+
+from .filter import IngredientFilter, RecipeFilter
+from .pagination import CustomPagination
 from .permission import IsAuthorOrAdminOrReadOnly
 from .serializers import (
+    CustomUserSerializer,
+    FavoriteSerializer,
     IngredientSerializer,
     RecipeReadSerializer,
     RecipeWriteSerializer,
-    TagSerializer,
-    CustomUserSerializer,
+    ShoppingCartSerializer,
     SubcribeSerializer,
     SubscriptionSerializer,
-    ShoppingCartSerializer,
-    FavoriteSerializer
+    TagSerializer,
 )
-from .pagination import CustomPagination
-from .filter import IngredientFilter, RecipeFilter
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
@@ -230,5 +231,5 @@ class CustomUserViewSet(UserViewSet):
             paginated_queryset,
             context={'request': request},
             many=True
-            )
+        )
         return self.get_paginated_response(serializer.data)

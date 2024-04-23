@@ -1,14 +1,13 @@
-import re
 import base64
+import re
 
-from django.core.files.base import ContentFile
-from rest_framework import serializers
 from django.conf import settings
-from django.core.mail import send_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
-
+from django.core.files.base import ContentFile
+from django.core.mail import send_mail
 from recipes.constants import REGEX_ALLOWS, REGEX_PATTERN
+from rest_framework import serializers
 
 
 def sending_confirmation_code(user):
