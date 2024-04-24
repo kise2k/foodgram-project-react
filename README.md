@@ -214,4 +214,4 @@ http://localhost:8000/api/recipes/1123/
 логин: sedyakin00@bk.ru
 пароль: snak4228
 ## Автор
-Данный учебный проект был разработан [yandex-praktikum](https://github.com/yandex-praktikum) и выполнен by kise2k
+Данный учебный проект был разработан [yandex-praktikum](https://github.com/yandex-praktikum) и выполнен by [kise2k](https://github.com/kise2k/)
