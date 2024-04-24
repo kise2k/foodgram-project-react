@@ -50,12 +50,19 @@ pip install -r backend/requirements.txt
 
 
 POSTGRES_DB=foodgram
+
 POSTGRES_USER=foodgram_user
+
 POSTGRES_PASSWORD=foodgram_password
+
 DB_NAME=foodgram_user
+
 DB_HOST=db
+
 DB_PORT=5432
+
 DEBUG=False
+
 ALLOWED_HOSTS=***.***.**.***,127.0.0.1,localhost,foodramkise2k.zapto.org
 
 
