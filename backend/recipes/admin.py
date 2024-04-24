@@ -11,6 +11,10 @@ from .models import (
 )
 
 
+class Recipe_Ingredients(admin.TabularInline):
+    model = Recipe_Ingredients
+
+
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Настройка админ панели для тегов."""
@@ -36,6 +40,9 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author', 'count_favorites', 'id')
     search_fields = ('name',)
     empty_value_display = 'пусто'
+    inlines = [
+        Recipe_Ingredients
+    ]
 
     def count_favorites(self, obj):
         return obj.favorites.count()
@@ -65,8 +72,3 @@ class SubscribeAdmin(admin.ModelAdmin):
         'user',
         'author'
     )
-
-
-@admin.register(Recipe_Ingredients)
-class IngredientInRecipe(admin.ModelAdmin):
-    list_display = ('recipe', 'ingredient', 'amount',)
