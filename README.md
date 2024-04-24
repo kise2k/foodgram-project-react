@@ -18,31 +18,31 @@
 ### Как запустить проект: 
 Клонируйте репозиторий:
 
-
+```bash
 git clone https://github.com/kise2k/foodgram-project-react.git
-
+```
 Перейдите в него в командной строке:
 
-
+```bash
 cd foodgram-project-react
-
+```
 
 Cоздайте и активируйте виртуальное окружение:
 
-
+```bash
 python3 -m venv venv 
-
+```
 
 Установите зависимости
-
+```bash
 source venv/Scripts/activate
-
+```
 
 Обновите pip и установите зависимости: каждая команда - отдельно
-
+```bash
 python -m pip install --upgrade pip
 pip install -r backend/requirements.txt
-
+```
 
 В корне проекта создайте файл .env и присвойте значения переменным окружения.
 
@@ -63,25 +63,25 @@ ALLOWED_HOSTS=***.***.**.***,127.0.0.1,localhost,foodramkise2k.zapto.org
 
 Запустите проект через docker compose:
 
-
+```bash
 docker compose -f docker-compose.yml up --build -d
-
+```
 
 Выполните миграции:
 
-
+```bash
 docker compose -f docker-compose.yml exec backend python manage.py migrate
-
+```
 
 Соберите статику:
 
-
+```bash
 docker compose -f docker-compose.yml exec backend python manage.py collectstatic
-
+```
 Скопируйте статику:
-
+```bash
 docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /backend_static/static/
-
+```
 
 ## Workflow
 
