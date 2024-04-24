@@ -117,11 +117,11 @@ TELEGRAM_TOKEN                 # токен бота (получить токе�
 ## Примеры запросов и ответов
 
 GET-запрос на эндпойнт 
-
+```bash
 http://localhost:8000/api/users/1/
-
+```
 дает следующий ответ:
-
+```bash
 {
   "email": "user@example.com",
   "id": 1,
@@ -130,31 +130,31 @@ http://localhost:8000/api/users/1/
   "last_name": "Пупкин",
   "is_subscribed": false
 }
-
+```
 
 POST-запрос на эндпойнт 
-
+```bash
 http://localhost:8000/api/auth/token/login/
-
+```
 с телом запроса:
-
+```bash
 {
   "password": "string",
   "email": "string"
 }
-
+```
 дает следующий ответ:
-
+```bash
 {
   "auth_token": "string"
 }
-
+```
 PATCH-запрос на эндпойнт
-
+```bash
 http://localhost:8000/api/recipes/1123/
-
+```
 с телом запроса:
-
+```bash
 {
   "ingredients": [
   {
@@ -171,9 +171,9 @@ http://localhost:8000/api/recipes/1123/
   "text": "string",
   "cooking_time": 1
 }
-
+```
 дает следующий ответ:
-
+```bash
 {
   "id": 0,
   "tags": [
@@ -207,7 +207,7 @@ http://localhost:8000/api/recipes/1123/
   "text": "string",
   "cooking_time": 1
 }
-
+```
 
 ## Данные для входа в админ-зону
 адрес: https://foodramkise2k.zapto.org
