@@ -45,7 +45,7 @@ class RecipeAdmin(admin.ModelAdmin):
     ]
 
     def count_favorites(self, obj):
-        return obj.favorites.count()
+        return obj.Favourites.count()
 
 
 @admin.register(Cart)
