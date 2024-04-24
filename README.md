@@ -94,7 +94,7 @@ docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. 
 
 Для использования Continuous Integration (CI) и Continuous Deployment (CD): в репозитории GitHub Actions Settings/Secrets/Actions создайте Secrets - переменные окружения для доступа к сервисам:
 
-
+```bash
 DOCKER_USERNAME                # имя пользователя в DockerHub
 DOCKER_PASSWORD                # пароль пользователя в DockerHub
 HOST                           # ip_address сервера
@@ -104,7 +104,7 @@ PASSPHRASE                     # кодовая фраза (пароль) для
 
 TELEGRAM_TO                    # id телеграм-аккаунта (можно узнать у @userinfobot, команда /start)
 TELEGRAM_TOKEN                 # токен бота (получить токен можно у @BotFather, /token, имя бота)
-
+```
 
 При push в ЛЮБУЮ ветку автоматически отрабатывают сценарии:
 * *tests* - проверка кода на соответствие стандарту PEP8.
