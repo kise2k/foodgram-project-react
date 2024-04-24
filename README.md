@@ -48,7 +48,7 @@ pip install -r backend/requirements.txt
 
 Пример:
 
-
+```bash
 POSTGRES_DB=foodgram
 
 POSTGRES_USER=foodgram_user
@@ -64,7 +64,7 @@ DB_PORT=5432
 DEBUG=False
 
 ALLOWED_HOSTS=***.***.**.***,127.0.0.1,localhost,foodramkise2k.zapto.org
-
+```
 
 Установите [docker](https://www.docker.com/) на свой компьютер.
 
