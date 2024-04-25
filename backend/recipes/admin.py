@@ -39,7 +39,6 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'author',
         'name',
-        'display_ingredients',
         'cooking_time',
         'text',
         'display_tags',
@@ -53,11 +52,6 @@ class RecipeAdmin(admin.ModelAdmin):
         Recipe_IngredientsInline
     ]
 
-    @admin.display(description='Ингредиенты')
-    def display_ingredients(self, obj):
-        return ', '.join([ingredient.ingredients.name
-                          for ingredient in obj.recipeingredient.all()])
-
     @admin.display(description='Теги')
     def display_tags(self, obj):
         return ', '.join([tag.name
@@ -65,18 +59,6 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def count_favorites(self, obj):
         return obj.Favourites.count()
-
-    def save_model(self, request, obj, form, change):
-        if not obj.pk:
-            obj.save()
-        if not obj.ingredients.exists():
-            self.message_user(
-                request,
-                "Рецепт должен содержать хотя бы один ингредиент.",
-                level='ERROR'
-            )
-            return
-        return super().save_model(request, obj, form, change)
 
 
 @admin.register(Cart)
