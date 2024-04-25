@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from .models import (
     Tag,
     Recipe,
@@ -11,13 +10,8 @@ from .models import (
 )
 
 
-class Recipe_IngredientsAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipe', 'ingredient', 'amount')
-
-
-@admin.register(Recipe_Ingredients)
-class Recipe_IngredientsModelAdmin(admin.ModelAdmin):
-    pass
+class Recipe_IngredientsInline(admin.TabularInline):
+    model = Recipe_Ingredients
 
 
 @admin.register(Tag)
@@ -54,10 +48,10 @@ class RecipeAdmin(admin.ModelAdmin):
         'pub_date',
     )
     search_fields = ('name', 'author')
-    list_filter = ('name', 'author', 'tags')
+    list_filter = ('author', 'tags')
     list_display_links = ('name',)
     inlines = [
-        Recipe_IngredientsAdmin
+        Recipe_IngredientsInline
     ]
 
     @admin.display(description='Ингредиенты')
@@ -77,7 +71,7 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     """Настройка админ панели для корзины."""
-    list_filter = ('pk', 'recipe', 'user')
+    list_filter = ('user', 'recipe')
     list_display = ('user', 'recipe')
     search_fields = ('user',)
     empty_value_display = 'пусто'
