@@ -67,6 +67,8 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.Favourites.count()
 
     def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.save()
         if not obj.ingredients.exists():
             self.message_user(
                 request,
