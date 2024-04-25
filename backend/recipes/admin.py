@@ -40,6 +40,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'name',
         'cooking_time',
+        'ingredients',
         'text',
         'display_tags',
         'count_favorites',
