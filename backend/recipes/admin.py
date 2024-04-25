@@ -100,3 +100,13 @@ class SubscribeAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'author')
     list_filter = ('user', 'author')
     search_fields = ('user', 'author')
+
+    def save_model(self, request, obj, form, change):
+        if obj.user == obj.author:
+            self.message_user(
+                request,
+                "Нельзя подписаться на самого себя.",
+                level='ERROR'
+            )
+            return
+        super().save_model(request, obj, form, change)
