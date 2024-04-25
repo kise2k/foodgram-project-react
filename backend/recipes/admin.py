@@ -36,7 +36,6 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    """Настройка админ панели для репецтов."""
     list_display = (
         'author',
         'name',
@@ -54,20 +53,10 @@ class RecipeAdmin(admin.ModelAdmin):
         Recipe_IngredientsInline
     ]
 
-    def save_model(self, request, obj, form, change):
-        if not obj.ingredients.exists():
-            self.message_user(
-                request,
-                "Рецепт должен содержать хотя бы один ингредиент.",
-                level='ERROR'
-            )
-            return False
-        return super().save_model(request, obj, form, change)
-
     @admin.display(description='Ингредиенты')
     def display_ingredients(self, obj):
         return ', '.join([ingredient.ingredients.name
-                          for ingredient in obj.recipeingredient.all()])
+                          for ingredient in obj.recipe_ingredients.all()])
 
     @admin.display(description='Теги')
     def display_tags(self, obj):
@@ -76,6 +65,12 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def count_favorites(self, obj):
         return obj.Favourites.count()
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+
+        for formset in formsets:
+            self.save_formset(request, form, formset, change)
 
 
 @admin.register(Cart)
