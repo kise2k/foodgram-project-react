@@ -66,6 +66,16 @@ class RecipeAdmin(admin.ModelAdmin):
     def count_favorites(self, obj):
         return obj.Favourites.count()
 
+    def save_model(self, request, obj, form, change):
+        if not obj.ingredients.exists():
+            self.message_user(
+                request,
+                "Рецепт должен содержать хотя бы один ингредиент.",
+                level='ERROR'
+            )
+            return False
+        return super().save_model(request, obj, form, change)
+
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
