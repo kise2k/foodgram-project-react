@@ -77,7 +77,8 @@ class Recipe(Name):
         Ingredient,
         through='Recipe_Ingredients',
         verbose_name='Ингридиенты',
-        blank=False
+        blank=False,
+        null=False
     )
     cooking_time = models.PositiveSmallIntegerField(
         validators=[
