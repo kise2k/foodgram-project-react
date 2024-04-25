@@ -66,12 +66,6 @@ class RecipeAdmin(admin.ModelAdmin):
     def count_favorites(self, obj):
         return obj.Favourites.count()
 
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request, form, formsets, change)
-
-        for formset in formsets:
-            self.save_formset(request, form, formset, change)
-
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
