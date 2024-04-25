@@ -5,13 +5,16 @@ from .models import User
 
 
 @admin.register(User)
-class UserAdmin(UserAdmin):
+class MyUserAdmin(UserAdmin):
+    """Класс админ-интерфейса для раздела пользователей."""
+
     list_display = (
+        'pk',
         'username',
         'email',
         'first_name',
         'last_name',
-        'id'
     )
-    search_fields = ('username',)
-    empty_value_display = 'пусто'
+    list_filter = ('username', 'email')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    list_display_links = ('username',)
