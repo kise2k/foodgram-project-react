@@ -39,8 +39,8 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'author',
         'name',
+        'display_ingredients',
         'cooking_time',
-        'ingredients',
         'text',
         'display_tags',
         'count_favorites',
@@ -53,6 +53,11 @@ class RecipeAdmin(admin.ModelAdmin):
         Recipe_IngredientsInline
     ]
 
+    @admin.display(description='Ингредиенты')
+    def display_ingredients(self, obj):
+        return ', '.join([ingredient.ingredients.name
+                          for ingredient in obj.recipeingredient.all()])
+
     @admin.display(description='Теги')
     def display_tags(self, obj):
         return ', '.join([tag.name
@@ -60,6 +65,11 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def count_favorites(self, obj):
         return obj.Favourites.count()
+
+
+@admin.register(Recipe_Ingredients)
+class RecipeIngredientAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'recipe', 'ingredient', 'amount')
 
 
 @admin.register(Cart)
