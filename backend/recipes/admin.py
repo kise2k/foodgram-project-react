@@ -75,7 +75,7 @@ class RecipeAdmin(admin.ModelAdmin):
                 "Рецепт должен содержать хотя бы один ингредиент.",
                 level='ERROR'
             )
-            return False
+            return
         return super().save_model(request, obj, form, change)
 
 
