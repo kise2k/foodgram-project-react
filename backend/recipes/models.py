@@ -78,7 +78,6 @@ class Recipe(Name):
         through='Recipe_Ingredients',
         verbose_name='Ингридиенты',
         blank=False,
-        null=False
     )
     cooking_time = models.PositiveSmallIntegerField(
         validators=[
@@ -107,14 +106,11 @@ class Recipe_Ingredients(models.Model):
         verbose_name='В каких рецептах',
         to=Recipe,
         on_delete=models.CASCADE,
-        null=False,
-        blank=False
     )
     ingredients = models.ForeignKey(
         verbose_name='Связанные ингредиенты',
         to=Ingredient,
         on_delete=models.CASCADE,
-        null=False,
         blank=False
     )
     amount = models.PositiveSmallIntegerField(
