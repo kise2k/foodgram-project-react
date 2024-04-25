@@ -54,6 +54,16 @@ class RecipeAdmin(admin.ModelAdmin):
         Recipe_IngredientsInline
     ]
 
+    def save_model(self, request, obj, form, change):
+        if not obj.ingredients.exists():
+            self.message_user(
+                request,
+                "Рецепт должен содержать хотя бы один ингредиент.",
+                level='ERROR'
+            )
+            return False
+        return super().save_model(request, obj, form, change)
+
     @admin.display(description='Ингредиенты')
     def display_ingredients(self, obj):
         return ', '.join([ingredient.ingredients.name
