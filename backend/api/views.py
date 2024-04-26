@@ -86,7 +86,7 @@ class RecipeViewSet(ModelViewSet):
         for ingredient in ingredients:
             name = ingredient['ingredients__name']
             unit = ingredient['ingredients__measurement_unit']
-            amount = ingredient['ingredients_amount']
+            amount = ingredient['ingredients__amount']
             shopping_list.append(f'\n{counter}. {name} - {amount} {unit}')
             counter += 1
         return shopping_list
