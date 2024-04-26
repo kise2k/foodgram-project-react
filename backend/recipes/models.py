@@ -115,6 +115,7 @@ class Recipe_Ingredients(models.Model):
         verbose_name='Связанные ингредиенты',
         to=Ingredient,
         on_delete=models.CASCADE,
+        null=False
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
