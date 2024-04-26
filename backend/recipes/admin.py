@@ -56,7 +56,7 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Ингредиенты')
     def display_ingredients(self, obj):
         return ', '.join([ri.ingredients.name
-                          for ri in obj.recipeingredient.recipe.all()])
+                          for ri in obj.recipeingredient.all()])
 
     @admin.display(description='Теги')
     def display_tags(self, obj):
