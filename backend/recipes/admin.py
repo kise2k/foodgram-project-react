@@ -40,6 +40,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'name',
         'display_ingredients',
+        'ingredients'
         'cooking_time',
         'text',
         'display_tags',
@@ -49,9 +50,6 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name', 'author')
     list_filter = ('author', 'tags')
     list_display_links = ('name',)
-    inlines = [
-        Recipe_IngredientsInline
-    ]
 
     @admin.display(description='Ингредиенты')
     def display_ingredients(self, obj):
