@@ -1,6 +1,7 @@
+from collections import defaultdict
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
@@ -76,20 +77,22 @@ class RecipeViewSet(ModelViewSet):
 
         recipes_in_carts = Recipe.objects.filter(carts__user=request.user)
 
-        ingredients = Recipe_Ingredients.objects.filter(
-            recipe__in=recipes_in_carts
-        ).values(
-            'ingredients__name',
-            'ingredients__measurement_unit'
-        ).annotate(
-            total_amount=Sum('amount')
-        )
+        ingredients_dict = defaultdict(int)
+
+        for recipe in recipes_in_carts:
+            ingredients = Recipe_Ingredients.objects.filter(recipe=recipe)
+            for ingredient in ingredients:
+                ingredients_dict[
+                    ingredient.ingredients.name
+                ] += ingredient.amount
+
         shopping_list = ['Список покупок:\n']
 
-        for counter, ingredient in enumerate(ingredients, start=1):
-            name = ingredient['ingredients__name']
-            unit = ingredient['ingredients__measurement_unit']
-            amount = ingredient['total_amount']
+        for counter, (name, amount) in enumerate(
+            ingredients_dict.items(),
+            start=1
+        ):
+            unit = Ingredient.objects.get(name=name).measurement_unit
             shopping_list.append(f'\n{counter}. {name} - {amount} {unit}')
 
         return shopping_list
