@@ -269,7 +269,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients:
             ingredient_id = ingredient_data.get('id')
             amount = ingredient_data.get('amount')
-            if amount < 1:
+            if amount <= 0:
                 raise serializers.ValidationError(
                     'Количество ингредиента должно быть больше 0'
                 )
