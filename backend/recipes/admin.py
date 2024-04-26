@@ -10,7 +10,7 @@ from .models import (
 )
 
 
-class Recipe_IngredientsInline(admin.TabularInline):
+class RecipeIngredientsInline(admin.TabularInline):
     model = Recipe_Ingredients
 
 
@@ -49,6 +49,9 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name', 'author')
     list_filter = ('author', 'tags')
     list_display_links = ('name',)
+    inlines = [
+        RecipeIngredientsInline
+    ]
 
     @admin.display(description='Ингредиенты')
     def display_ingredients(self, obj):
