@@ -1,4 +1,5 @@
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from user.models import User
 
@@ -132,6 +133,10 @@ class Recipe_Ingredients(models.Model):
             f'{self.ingredients.name} ({self.ingredients.measurement_unit}) - '
             f'{self.amount}'
         )
+
+    def clean(self):
+        if not self.recipe or not self.ingredients:
+            raise ValidationError('Ингредиенты для рецепта обязательны.')
 
 
 class UserRecipe(models.Model):
