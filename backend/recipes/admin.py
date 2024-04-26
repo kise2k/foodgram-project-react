@@ -69,7 +69,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe_Ingredients)
 class RecipeIngredientAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'recipe', 'ingredients', 'amount')
+    list_display = ('recipe', 'ingredients', 'amount')
 
 
 @admin.register(Cart)

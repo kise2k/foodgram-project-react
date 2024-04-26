@@ -21,9 +21,6 @@ class Name(models.Model):
         abstract = True
         ordering = ('name', )
 
-    def __str__(self):
-        return self.name[:LENGTH_FOR_ADMIN]
-
 
 class Tag(Name):
     """Модель описывающая теги."""
@@ -42,6 +39,9 @@ class Tag(Name):
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
+    def __str__(self):
+        return self.name
+
 
 class Ingredient(Name):
     """Модель описывающая игридиенты."""
@@ -53,6 +53,9 @@ class Ingredient(Name):
     class Meta(Name.Meta):
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
+
+    def __str__(self):
+        return f'{self.name}, {self.measurement_unit}'
 
 
 class Recipe(Name):
@@ -98,6 +101,9 @@ class Recipe(Name):
         default_related_name = 'recipes'
         ordering = ('-pub_date',)
 
+    def __str__(self):
+        return self.name
+
 
 class Recipe_Ingredients(models.Model):
     """Вспомогательный класс для модели Recipe"""
@@ -121,8 +127,11 @@ class Recipe_Ingredients(models.Model):
         default_related_name = 'recipeingredient'
         ordering = ('recipe',)
 
-    def __str__(self) -> str:
-        return f'{self.amount} {self.ingredients}'
+    def __str__(self):
+        return (
+            f'{self.ingredient.name} ({self.ingredient.measurement_unit}) - '
+            f'{self.amount}'
+        )
 
 
 class UserRecipe(models.Model):
@@ -157,6 +166,9 @@ class Favorite(UserRecipe):
             )
         ]
 
+    def __str__(self):
+        return f'{self.user} добавил "{self.recipe}" в Избранное'
+
 
 class Cart(UserRecipe):
     """Модель описывающая корзину."""
@@ -171,6 +183,9 @@ class Cart(UserRecipe):
                 name='unique_user_recipe'
             )
         ]
+
+    def __str__(self):
+        return f'{self.user} добавил "{self.recipe}" в Корзину покупок'
 
 
 class Subscribe(models.Model):
