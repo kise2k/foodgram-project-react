@@ -75,20 +75,23 @@ class RecipeViewSet(ModelViewSet):
         """Функция для создания файла со списком покупок."""
 
         recipes_in_carts = Recipe.objects.filter(carts__user=request.user)
+
         ingredients = Recipe_Ingredients.objects.filter(
             recipe__in=recipes_in_carts
         ).values(
-            'ingredients__name', 'ingredients__measurement_unit'
-        ).annotate(ingredients_amount=Sum('amount'))
-
+            'ingredients__name',
+            'ingredients__measurement_unit'
+        ).annotate(
+            total_amount=Sum('amount')
+        )
         shopping_list = ['Список покупок:\n']
-        counter = 1
-        for ingredient in ingredients:
+
+        for counter, ingredient in enumerate(ingredients, start=1):
             name = ingredient['ingredients__name']
             unit = ingredient['ingredients__measurement_unit']
-            amount = ingredient['ingredients_amount']
+            amount = ingredient['total_amount']
             shopping_list.append(f'\n{counter}. {name} - {amount} {unit}')
-            counter += 1
+
         return shopping_list
 
     @action(
