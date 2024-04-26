@@ -79,7 +79,7 @@ class RecipeViewSet(ModelViewSet):
             recipe__in=recipes_in_carts
         ).values(
             'ingredients__name', 'ingredients__measurement_unit'
-        ).annotate(recipeingredient_amount=Sum('amount'))
+        ).annotate(ingredients_amount=Sum('amount'))
 
         shopping_list = ['Список покупок:\n']
         counter = 1
