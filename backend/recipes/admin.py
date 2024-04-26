@@ -36,16 +36,29 @@ class IngredientAdmin(admin.ModelAdmin):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    inlines = (Recipe_IngredientsInline,)
     list_display = (
-        'name',
         'author',
+        'name',
+        'display_ingredients',
         'cooking_time',
+        'text',
+        'display_tags',
+        'count_favorites',
         'pub_date',
-        'count_favorites'
     )
-    search_fields = ('name', 'author__username')
-    list_filter = ('author', 'cooking_time', 'pub_date')
+    search_fields = ('name', 'author')
+    list_filter = ('author', 'tags')
+    list_display_links = ('name',)
+
+    @admin.display(description='Ингредиенты')
+    def display_ingredients(self, obj):
+        return ', '.join([ingredient.ingredient.name
+                          for ingredient in obj.recipeingredient.all()])
+
+    @admin.display(description='Теги')
+    def display_tags(self, obj):
+        return ', '.join([tag.name
+                          for tag in obj.tags.all()])
 
     def count_favorites(self, obj):
         return obj.Favourites.count()
