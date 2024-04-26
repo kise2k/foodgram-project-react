@@ -4,7 +4,6 @@ from user.models import User
 
 from .constants import (
     NAME_CONST_CHAR,
-    LENGTH_FOR_ADMIN,
     SLUG_CONST_CHAR,
     MIN_CONST_FOR_COOK
 )
