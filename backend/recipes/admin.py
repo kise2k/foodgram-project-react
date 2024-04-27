@@ -10,10 +10,6 @@ from .models import (
 )
 
 
-class RecipeIngredientsInline(admin.TabularInline):
-    model = Recipe_Ingredients
-
-
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Настройка админ панели для тегов."""
@@ -49,9 +45,6 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name', 'author')
     list_filter = ('author', 'tags')
     list_display_links = ('name',)
-    inlines = [
-        RecipeIngredientsInline
-    ]
 
     @admin.display(description=' Ингредиенты ')
     def get_ingredients(self, obj):
