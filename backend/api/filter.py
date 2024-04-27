@@ -17,8 +17,10 @@ class IngredientFilter(FilterSet):
 class RecipeFilter(FilterSet):
     """Фильтр для поиска в рецептах через tags."""
     tags = filters.ModelMultipleChoiceFilter(
-        to_field_name='slug',
-        queryset=Tag.objects.all()
+        field_name='tags__slug',
+        queryset=Tag.objects.all(),
+        label='Tags',
+        to_field_name='slug'
     )
     is_favorited = filters.BooleanFilter(
         method='filter_is_favorited'
