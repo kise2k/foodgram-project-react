@@ -10,6 +10,14 @@ from .models import (
 )
 
 
+class RecipeIngredientInline(admin.TabularInline):
+    model = Recipe_Ingredients
+    extra = 0
+
+    def get_min_num(self, request, obj=None, **kwargs):
+        return 1 if obj is None else 0
+
+
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Настройка админ панели для тегов."""
@@ -35,16 +43,19 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display = (
         'author',
         'name',
-        'get_ingredients',
         'cooking_time',
         'text',
         'display_tags',
+        'get_ingredients',
         'count_favorites',
         'pub_date',
     )
     search_fields = ('name', 'author')
     list_filter = ('author', 'tags')
     list_display_links = ('name',)
+    inlines = [
+        RecipeIngredientInline
+    ]
 
     @admin.display(description=' Ингредиенты ')
     def get_ingredients(self, obj):
