@@ -52,7 +52,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'pub_date',
     )
     search_fields = ('name', 'author')
-    list_filter = ('author', 'tags')
+    list_filter = ('author', 'tags', 'name',)
     list_display_links = ('name',)
     inlines = [
         RecipeIngredientInline
