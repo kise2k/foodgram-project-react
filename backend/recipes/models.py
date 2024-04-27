@@ -120,6 +120,13 @@ class Recipe_Ingredients(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
+        default=1,
+        validators=(
+            MinValueValidator(
+                MIN_CONST_FOR_COOK,
+                message='Мин. количество ингридиентов 1'
+            ),),
+        verbose_name='Количество',
     )
 
     class Meta:

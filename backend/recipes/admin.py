@@ -53,10 +53,14 @@ class RecipeAdmin(admin.ModelAdmin):
         RecipeIngredientsInline
     ]
 
-    @admin.display(description='Ингредиенты')
-    def display_ingredients(self, obj):
-        return ', '.join([ri.ingredients.name
-                          for ri in obj.recipeingredient.all()])
+    @admin.display(description=' Ингредиенты ')
+    def get_ingredients(self, obj):
+        return '\n '.join([
+            f'{item["ingredients__name"]} - {item["amount"]}'
+            f' {item["ingredients__measurement_unit"]}.'
+            for item in obj.recipeingredient_recipe.values(
+                'ingredients__name',
+                'amount', 'ingredients__measurement_unit')])
 
     @admin.display(description='Теги')
     def display_tags(self, obj):
