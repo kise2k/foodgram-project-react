@@ -126,7 +126,6 @@ class Recipe_Ingredients(models.Model):
                 MIN_CONST_FOR_COOK,
                 message='Мин. количество ингридиентов 1'
             ),),
-        verbose_name='Количество',
     )
 
     class Meta:
