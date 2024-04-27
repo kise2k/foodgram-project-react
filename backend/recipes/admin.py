@@ -17,6 +17,8 @@ class RecipeIngredientInline(admin.TabularInline):
     def get_min_num(self, request, obj=None, **kwargs):
         return 1 if obj is None else 0
 
+    min_num = 1
+
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
