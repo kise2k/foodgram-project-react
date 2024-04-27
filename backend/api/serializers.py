@@ -195,7 +195,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     ingredients = IngredientInfoSerializer(
         many=True,
         read_only=True,
-        source='recipeingredient'
+        source='recipe'
     )
     author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
@@ -241,7 +241,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     image = Base64ImageField(required=True)
     ingredients = Recipe_IngredientWriteSerializer(
         many=True,
-        source='recipeingredient'
+        source='recipe'
     )
     tags = PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
@@ -261,7 +261,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients_list = []
-        ingredients = data.get('recipeingredient')
+        ingredients = data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError(
                 'Рецепт должен содержать хотя бы один ингредиент'
@@ -319,14 +319,14 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context.get('request')
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('recipeingredient')
+        ingredients = validated_data.pop('ingredients')
         recipe = Recipe.objects.create(author=request.user, **validated_data)
         recipe.tags.set(tags)
         self.create_ingredients(ingredients, recipe)
         return recipe
 
     def update(self, instance, validated_data):
-        ingredients = validated_data.pop('recipeingredient')
+        ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
         instance.tags.clear()
         instance.tags.set(tags)

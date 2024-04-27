@@ -56,11 +56,11 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description=' Ингредиенты ')
     def get_ingredients(self, obj):
         return '\n '.join([
-            f'{item["ingredients__name"]} - {item["amount"]}'
-            f' {item["ingredients__measurement_unit"]}.'
-            for item in obj.recipeingredient_recipe.values(
-                'ingredients__name',
-                'amount', 'ingredients__measurement_unit')])
+            f'{item["ingredient__name"]} - {item["amount"]}'
+            f' {item["ingredient__measurement_unit"]}.'
+            for item in obj.recipe.values(
+                'ingredient__name',
+                'amount', 'ingredient__measurement_unit')])
 
     @admin.display(description='Теги')
     def display_tags(self, obj):
