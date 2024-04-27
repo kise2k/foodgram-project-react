@@ -48,7 +48,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'cooking_time',
         'text',
         'display_tags',
-        'get_ingredients',
+        'display_ingredients',
         'count_favorites',
         'pub_date',
     )
@@ -59,14 +59,10 @@ class RecipeAdmin(admin.ModelAdmin):
         RecipeIngredientInline
     ]
 
-    @admin.display(description=' Ингредиенты ')
-    def get_ingredients(self, obj):
-        return '\n '.join([
-            f'{item["ingredient__name"]} - {item["amount"]}'
-            f' {item["ingredient__measurement_unit"]}.'
-            for item in obj.recipe.values(
-                'ingredient__name',
-                'amount', 'ingredient__measurement_unit')])
+    @admin.display(description='Ингредиенты')
+    def display_ingredients(self, obj):
+        return ', '.join([ingredient.ingredient.name
+                          for ingredient in obj.recipeingredient.all()])
 
     @admin.display(description='Теги')
     def display_tags(self, obj):
