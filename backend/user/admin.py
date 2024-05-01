@@ -6,7 +6,7 @@ from .models import User, Subscribe
 
 
 @admin.register(User)
-class CustomUserAdmin(UserAdmin):
+class UserAdmin(UserAdmin):
     """Класс админ-интерфейса для раздела пользователей."""
 
     list_display = (
