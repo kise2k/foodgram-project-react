@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'api.apps.ApiConfig',
     'recipes.apps.RecipesConfig',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -67,16 +68,24 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 AUTH_USER_MODEL = 'user.User'
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
-        'USER': os.getenv('POSTGRES_USER', 'foodgram'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'foodgram'),
-        'HOST': os.getenv('DB_HOST', ''),
-        'PORT': int(os.getenv('DB_PORT', 5432)),
+if 'USE_SQLITE' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
+            'USER': os.getenv('POSTGRES_USER', 'foodgram'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'foodgram'),
+            'HOST': os.getenv('DB_HOST', ''),
+            'PORT': int(os.getenv('DB_PORT', 5432)),
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -130,9 +139,8 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'SERIALIZERS': {
-        'user_create': 'api.serializers.CustomUserCreateSerializer',
-        'user': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
+        'user': 'api.serializers.UserSerializer',
+        'current_user': 'api.serializers.UserSerializer',
     },
     'PERMISSIONS': {
         'user': ['api.permission.IsAuthorOrAdminOrReadOnly'],

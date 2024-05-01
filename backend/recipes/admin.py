@@ -1,22 +1,19 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+
 from .models import (
     Tag,
     Recipe,
     Ingredient,
     Cart,
     Favorite,
-    Subscribe,
-    Recipe_Ingredients
+    RecipeIngredients
 )
 
 
 class RecipeIngredientInline(admin.TabularInline):
-    model = Recipe_Ingredients
+    model = RecipeIngredients
     extra = 0
-
-    def get_min_num(self, request, obj=None, **kwargs):
-        return 1 if obj is None else 0
-
     min_num = 1
 
 
@@ -54,20 +51,33 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('name', 'author')
     list_filter = ('author', 'tags', 'name',)
     list_display_links = ('name',)
-    inlines = [
-        RecipeIngredientInline
-    ]
+    inlines = (
+        RecipeIngredientInline,
+    )
+
+    @admin.display(description='Ингредиенты')
+    def display_ingredients(self, obj):
+        return ', '.join([ingredient.ingredients.name
+                          for ingredient in obj.recipeingredients.all()])
 
     @admin.display(description='Теги')
     def display_tags(self, obj):
         return ', '.join([tag.name
                           for tag in obj.tags.all()])
 
+    @admin.display(description='Количетсво избранных рецептов')
     def count_favorites(self, obj):
-        return obj.Favourites.count()
+        return obj.favourites.count()
+
+    @admin.display(description='Картинки')
+    def show_image(self, obj):
+        if obj.image:
+            return mark_safe(
+                f'<img src={obj.image.url} width="80" height="60">'
+            )
 
 
-@admin.register(Recipe_Ingredients)
+@admin.register(RecipeIngredients)
 class RecipeIngredientAdmin(admin.ModelAdmin):
     list_display = ('recipe', 'ingredients', 'amount')
 
@@ -87,20 +97,3 @@ class FavoriteAdmin(admin.ModelAdmin):
     search_fields = ('user', 'recipe')
     list_display_links = ('user',)
     empty_value_display = 'пусто'
-
-
-@admin.register(Subscribe)
-class SubscribeAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'user', 'author')
-    list_filter = ('user', 'author')
-    search_fields = ('user', 'author')
-
-    def save_model(self, request, obj, form, change):
-        if obj.user == obj.author:
-            self.message_user(
-                request,
-                "Нельзя подписаться на самого себя.",
-                level='ERROR'
-            )
-            return
-        super().save_model(request, obj, form, change)
