@@ -48,7 +48,7 @@ class Command(BaseCommand):
             )
         name, color, slug = data
         return model(
-                name=name,
-                color=color,
-                slug=slug
-            )
+            name=name,
+            color=color,
+            slug=slug
+        )
