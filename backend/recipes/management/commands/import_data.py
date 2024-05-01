@@ -51,4 +51,4 @@ class Command(BaseCommand):
                 name=name,
                 color=color,
                 slug=slug
-        )
+            )
