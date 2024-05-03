@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, F
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -76,6 +76,7 @@ class RecipeViewSet(ModelViewSet):
     @staticmethod
     def create_instance(serializer_class, recipe_id, request):
         """Статический метод для создания записи."""
+
         context = {'request': request}
         data = {'user': request.user.id, 'recipe': recipe_id}
         serializer = serializer_class(data=data, context=context)
@@ -86,11 +87,12 @@ class RecipeViewSet(ModelViewSet):
     @staticmethod
     def make_shopping_list(ingredients_queryset):
         """Функция для создания списка покупок."""
+
         ingredients_dict = defaultdict(int)
 
         for ingredient in ingredients_queryset:
             ingredients_dict[
-                ingredient['ingredients__name']
+                ingredient['ingredient_name']
             ] += ingredient['amount']
 
         shopping_list = ['Список покупок:\n']
@@ -101,7 +103,7 @@ class RecipeViewSet(ModelViewSet):
         ):
             shopping_list.append(
                 f'\n{counter}. {name} - '
-                f'{amount} {ingredient["ingredients__measurement_unit"]}'
+                f'{amount} {ingredient["measurement_unit"]}'
             )
 
         return shopping_list
@@ -113,14 +115,15 @@ class RecipeViewSet(ModelViewSet):
     )
     def download_shopping_cart(self, request):
         """Отправка файла со списком покупок."""
+
         ingredients_queryset = RecipeIngredients.objects.filter(
             recipe__carts__user=request.user
         ).values(
-            'ingredients__name',
-            'ingredients__measurement_unit'
+            ingredient_name=F('ingredients__name'),
+            measurement_unit=F('ingredients__measurement_unit')
         ).annotate(
             amount=Sum('amount')
-        ).order_by('ingredients__name')
+        ).order_by('ingredient_name')
 
         shopping_list = self.make_shopping_list(ingredients_queryset)
 
@@ -137,6 +140,7 @@ class RecipeViewSet(ModelViewSet):
     )
     def favorite(self, request, pk):
         """Добавление рецепта в избранное."""
+
         return self.create_instance(
             FavoriteSerializer,
             pk,
@@ -146,6 +150,7 @@ class RecipeViewSet(ModelViewSet):
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         """Удаление рецепта из избранного."""
+
         favorite_obj_after_filter = Favorite.objects.filter(
             user=request.user,
             recipe_id=pk
@@ -162,6 +167,7 @@ class RecipeViewSet(ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок."""
+
         return self.create_instance(
             ShoppingCartSerializer,
             pk,
@@ -171,6 +177,7 @@ class RecipeViewSet(ModelViewSet):
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
         """Удаление рецепта из списка покупок."""
+
         favorite_obj_after_filter = Cart.objects.filter(
             user=request.user,
             recipe_id=pk

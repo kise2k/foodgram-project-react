@@ -173,10 +173,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         read_only=True,
         source='recipeingredients'
     )
-    cooking_time = serializers.IntegerField(
-        min_value=MIN_CONST_FOR_COOK,
-        max_value=MAX_CONST_FOR_COOK
-    )
     author = UserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
@@ -223,6 +219,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     tags = PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
+    )
+    cooking_time = serializers.IntegerField(
+        min_value=MIN_CONST_FOR_COOK,
+        max_value=MAX_CONST_FOR_COOK
     )
 
     class Meta:
@@ -289,6 +289,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         RecipeIngredients.objects.filter(recipe=instance).delete()
+        self.create_ingredients(
+            ingredients,
+            instance
+        )
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):

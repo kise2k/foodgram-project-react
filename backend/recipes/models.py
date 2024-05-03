@@ -153,12 +153,12 @@ class RecipeIngredients(models.Model):
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Количество ингридиентов'
         ordering = ('recipe',)
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('recipe', 'ingredients',),
                 name='unique_recipe_ingredient'
-            )
-        ]
+            ),
+        )
 
     def __str__(self):
         return (
@@ -184,7 +184,7 @@ class UserRecipe(models.Model):
     class Meta:
         abstract = True
         ordering = ('recipe',)
-    constraints = (
+        constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe',),
                 name='%(class)s_constraint_name'
