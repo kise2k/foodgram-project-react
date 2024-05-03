@@ -8,7 +8,6 @@ from .functions import validate_username
 
 class User(AbstractUser):
     REQUIRED_FIELDS = (
-        'id',
         'username',
         'first_name',
         'last_name'
@@ -45,6 +44,7 @@ class User(AbstractUser):
 
 class Subscribe(models.Model):
     """Модель описывающая подписки."""
+
     user = models.ForeignKey(
         User,
         related_name='subscriber',
@@ -60,18 +60,19 @@ class Subscribe(models.Model):
 
     class Meta:
         ordering = ('user', 'author',)
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('user', 'author',),
                 name='unique_user_author'
             )
-        ]
+        ),
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
 
     def clean(self):
         if self.user == self.author:
             raise ValidationError('Нельзя подписываться на самого себя')
+        return super().save(self)
 
     def __str__(self):
         return f'{self.user} подписан на {self.author}'

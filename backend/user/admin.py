@@ -1,12 +1,12 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as AdminForUserBase
 from django.db.models import Count
 
 from .models import User, Subscribe
 
 
 @admin.register(User)
-class UserAdmin(UserAdmin):
+class UserAdmin(AdminForUserBase):
     """Класс админ-интерфейса для раздела пользователей."""
 
     list_display = (

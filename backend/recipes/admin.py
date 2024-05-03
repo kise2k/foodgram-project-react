@@ -20,6 +20,7 @@ class RecipeIngredientInline(admin.TabularInline):
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Настройка админ панели для тегов."""
+
     list_filter = ('name', 'color', 'slug')
     list_display = ('pk', 'name', 'slug', 'color')
     search_fields = ('name', 'color', 'slug')
@@ -30,6 +31,7 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     """Настройка админ панели для ингридиентов."""
+
     list_display = ('pk', 'name', 'measurement_unit')
     search_fields = ('name', 'measurement_unit')
     list_filter = ('name',)
@@ -86,6 +88,7 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     """Настройка админ панели для корзины."""
+
     list_filter = ('user', 'recipe')
     list_display = ('user', 'recipe')
     search_fields = ('user',)
@@ -94,6 +97,8 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
+    """Настройка админ панели для избранного."""
+
     list_display = ('pk', 'user', 'recipe')
     search_fields = ('user', 'recipe')
     list_display_links = ('user',)

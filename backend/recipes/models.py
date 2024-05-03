@@ -14,6 +14,7 @@ from .constants import (
 
 class Name(models.Model):
     """Абстрактная модель, описывающая имена."""
+
     name = models.CharField(
         max_length=NAME_CONST_CHAR,
         verbose_name='Название',
@@ -26,6 +27,7 @@ class Name(models.Model):
 
 class Tag(Name):
     """Модель описывающая теги."""
+
     color = ColorField(
         verbose_name='Цвет',
         max_length=SIZE_FOR_COLOR,
@@ -47,6 +49,7 @@ class Tag(Name):
 
 class Ingredient(Name):
     """Модель описывающая игридиенты."""
+
     measurement_unit = models.CharField(
         max_length=NAME_CONST_CHAR,
         verbose_name='Единица измерения'
@@ -55,12 +58,12 @@ class Ingredient(Name):
     class Meta():
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('name', 'measurement_unit',),
                 name='unique_name_measurement_unit'
-            )
-        ]
+            ),
+        )
         ordering = ('name',)
 
     def __str__(self):
@@ -69,6 +72,7 @@ class Ingredient(Name):
 
 class Recipe(Name):
     """Модель описывающая рецепты."""
+
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -118,6 +122,7 @@ class Recipe(Name):
 
 class RecipeIngredients(models.Model):
     """Вспомогательный класс для модели Recipe"""
+
     recipe = models.ForeignKey(
         verbose_name='В каких рецептах',
         to=Recipe,
@@ -131,7 +136,7 @@ class RecipeIngredients(models.Model):
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
-        default=1,
+        default=MIN_CONST_FOR_COOK,
         validators=(
             MinValueValidator(
                 MIN_CONST_FOR_COOK,
@@ -164,6 +169,7 @@ class RecipeIngredients(models.Model):
 
 class UserRecipe(models.Model):
     """Абстрактный базовый класс для моделей Favorite и Cart."""
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -178,21 +184,16 @@ class UserRecipe(models.Model):
     class Meta:
         abstract = True
         ordering = ('recipe',)
-
-    def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-
-        unique_constraint_name = f'unique_{cls.__name__.lower()}_user_recipe'
-        cls._meta.constraints = [
+    constraints = (
             models.UniqueConstraint(
                 fields=('user', 'recipe',),
-                name=unique_constraint_name
-            )
-        ]
+                name='%(class)s_constraint_name'
+            ),
+        )
 
     def __str__(self):
-        return f'{self.user} добавил "{self.recipe}"'\
-               f' в {self._meta.verbose_name}'
+        return (f'{self.user} добавил "{self.recipe}"'
+                f' в {self._meta.verbose_name}')
 
 
 class Favorite(UserRecipe):

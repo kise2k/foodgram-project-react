@@ -9,7 +9,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from djoser import views as djoser_views
+from djoser.views import UserViewSet
 
 from recipes.models import (
     Cart,
@@ -74,6 +74,16 @@ class RecipeViewSet(ModelViewSet):
         return RecipeWriteSerializer
 
     @staticmethod
+    def create_instance(serializer_class, recipe_id, request):
+        """Статический метод для создания записи."""
+        context = {'request': request}
+        data = {'user': request.user.id, 'recipe': recipe_id}
+        serializer = serializer_class(data=data, context=context)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @staticmethod
     def make_shopping_list(ingredients_queryset):
         """Функция для создания списка покупок."""
         ingredients_dict = defaultdict(int)
@@ -127,14 +137,7 @@ class RecipeViewSet(ModelViewSet):
     )
     def favorite(self, request, pk):
         """Добавление рецепта в избранное."""
-        try:
-            Recipe.objects.get(id=pk)
-        except Recipe.DoesNotExist:
-            return Response(
-                {"error": "Рецепт с указанным ID не найден."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return FavoriteSerializer.create_instance(
+        return self.create_instance(
             FavoriteSerializer,
             pk,
             request
@@ -143,19 +146,13 @@ class RecipeViewSet(ModelViewSet):
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         """Удаление рецепта из избранного."""
-        try:
-            recipe = Recipe.objects.get(id=pk)
-        except Recipe.DoesNotExist:
-            return Response(
-                {"error": "Рецепт с указанным ID не найден!"},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        if not Favorite.objects.filter(
+        favorite_obj_after_filter = Favorite.objects.filter(
             user=request.user,
-            recipe=recipe
-        ).exists():
-            raise ValidationError("Рецепт не найден в избранном.")
-        Favorite.objects.filter(user=request.user, recipe=recipe).delete()
+            recipe_id=pk
+        )
+        if not favorite_obj_after_filter.exists():
+            raise ValidationError('Рецепт не найден в избранном.')
+        favorite_obj_after_filter.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -165,14 +162,7 @@ class RecipeViewSet(ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         """Добавление рецепта в список покупок."""
-        try:
-            Recipe.objects.get(id=pk)
-        except Recipe.DoesNotExist:
-            return Response(
-                {"error": "Рецепт с указанным ID не найден."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        return ShoppingCartSerializer.create_instance(
+        return self.create_instance(
             ShoppingCartSerializer,
             pk,
             request
@@ -181,20 +171,17 @@ class RecipeViewSet(ModelViewSet):
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
         """Удаление рецепта из списка покупок."""
-        try:
-            recipe = Recipe.objects.get(id=pk)
-        except Recipe.DoesNotExist:
-            return Response(
-                {"error": "Рецепт с указанным ID не найден."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        if not Cart.objects.filter(user=request.user, recipe=recipe).exists():
-            raise ValidationError("Рецепт не найден в списке покупок.")
-        Cart.objects.filter(user=request.user, recipe=recipe).delete()
+        favorite_obj_after_filter = Cart.objects.filter(
+            user=request.user,
+            recipe_id=pk
+        )
+        if not favorite_obj_after_filter.exists():
+            raise ValidationError('Рецепт не найден в списке покупок.')
+        favorite_obj_after_filter.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserViewSet(djoser_views.UserViewSet):
+class UserViewSet(UserViewSet):
     """Вывод пользователей."""
 
     queryset = User.objects.all()
@@ -212,16 +199,9 @@ class UserViewSet(djoser_views.UserViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def subscribe(self, request, id):
-        try:
-            User.objects.get(pk=id)
-        except User.DoesNotExist:
-            return Response(
-                {"error": "Автор с указанным ID не найден."},
-                status=status.HTTP_404_NOT_FOUND
-            )
         serializer = SubcribeSerializer(
             data={'user': request.user.id, 'author': id},
-            context={'request': request, 'id': id}
+            context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -248,7 +228,7 @@ class UserViewSet(djoser_views.UserViewSet):
     )
     def subscriptions(self, request):
         users = User.objects.filter(subscribing__user=request.user).annotate(
-            recipe_count=Count('recipes', distinct=True)
+            recipes_count=Count('recipes')
         )
         paginated_queryset = self.paginate_queryset(users)
         serializer = SubscriptionSerializer(
