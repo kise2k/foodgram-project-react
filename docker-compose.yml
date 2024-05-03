@@ -33,8 +33,6 @@ services:
     ports:
       - 8080:80
     volumes:
-      - /docs/:/usr/share/nginx/html/api/docs/
-      - ../frontend/build:/usr/share/nginx/html/
       - static_prod:/static
       - media_prod:/app/media/
     depends_on:
