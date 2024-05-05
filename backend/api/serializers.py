@@ -32,9 +32,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context['request']
-        if request and request.user.is_authenticated and obj:
-            return obj.subscribing.filter(user=request.user).exists()
-        return False
+        return (
+            request and request.user.is_authenticated
+            and obj.subscribing.filter(user=request.user).exists()
+        )
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -59,7 +60,13 @@ class RecipeIngredientWriteSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField(
         min_value=MIN_CONST_FOR_COOK,
-        max_value=MAX_CONST_FOR_COOK
+        max_value=MAX_CONST_FOR_COOK,
+        error_messages={
+            'min_value': ('Введенное значение должно быть не меньше '
+                          '{min_value}.'),
+            'max_value': ('Введенное значение должно быть не больше '
+                          '{max_value}.')
+        }
     )
 
     class Meta:
@@ -108,8 +115,11 @@ class SubscriptionSerializer(UserSerializer):
         request = self.context['request']
         limit_recipes = request.query_params.get('recipes_limit')
         recipes = obj.recipes.all()
-        if limit_recipes and limit_recipes.isdigit():
-            recipes = obj.recipes.all()[:int(limit_recipes)]
+        if limit_recipes:
+            try:
+                recipes = recipes[:int(limit_recipes)]
+            except ValueError:
+                pass
         return RecipeShortSerializer(
             recipes,
             many=True,
@@ -194,15 +204,17 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         request = self.context['request']
-        if request and request.user.is_authenticated and obj:
-            return obj.favourites.filter(user=request.user).exists()
-        return False
+        return (
+            request and request.user.is_authenticated
+            and obj.favourites.filter(user=request.user).exists()
+        )
 
     def get_is_in_shopping_cart(self, obj):
         request = self.context['request']
-        if request and request.user.is_authenticated and obj:
-            return obj.carts.filter(user=request.user).exists()
-        return False
+        return (
+            request and request.user.is_authenticated
+            and obj.carts.filter(user=request.user).exists()
+        )
 
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
@@ -222,7 +234,13 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     )
     cooking_time = serializers.IntegerField(
         min_value=MIN_CONST_FOR_COOK,
-        max_value=MAX_CONST_FOR_COOK
+        max_value=MAX_CONST_FOR_COOK,
+        error_messages={
+            'min_value': ('Введенное значение должно быть не меньше '
+                          '{min_value}.'),
+            'max_value': ('Введенное значение должно быть не больше '
+                          '{max_value}.')
+        }
     )
 
     class Meta:
@@ -240,39 +258,39 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     def validate(self, data):
         ingredients = data.get('ingredients')
         if not ingredients:
-            raise serializers.ValidationError(
-                'Рецепт должен содержать хотя бы один ингредиент'
-            )
+            raise serializers.ValidationError({
+                'ingredients': 'Нужен хоть один ингридиент для рецепта'
+            })
         ingredient_ids = [ingredient.get('id') for ingredient in ingredients]
         if len(ingredient_ids) != len(set(ingredient_ids)):
-            raise serializers.ValidationError(
-                'Вы пытаетесь добавить в рецепт два одинаковых ингредиента'
-            )
+            raise serializers.ValidationError({
+                'ingredients': 'Повторяющиеся ингредиенты запрещены'
+            })
         tags = data.get('tags')
         if not tags:
-            raise serializers.ValidationError(
-                'Рецепт должен содержать хотя бы один тег',
+            raise serializers.ValidationError({
+                'tags': 'Рецепт должен содержать хотя бы один тег'
+            },
                 code=status.HTTP_400_BAD_REQUEST
             )
         if len(set(tags)) != len(tags):
-            raise serializers.ValidationError(
-                'Повторяющиеся теги запрещены',
+            raise serializers.ValidationError({
+                'tags': 'Повторяющиеся теги запрещены'
+            },
                 code=status.HTTP_400_BAD_REQUEST
             )
         return data
 
     @staticmethod
     def create_ingredients(ingredients, recipe):
-        ingredient_list = []
-        for ingredient in ingredients:
-            ingredient_list.append(
-                RecipeIngredients(
-                    recipe=recipe,
-                    ingredients_id=ingredient.get('id').id,
-                    amount=ingredient.get('amount')
-                )
-            )
-        RecipeIngredients.objects.bulk_create(ingredient_list)
+        ingredients_data = [
+            RecipeIngredients(
+                recipe=recipe,
+                ingredients=ingredient['id'],
+                amount=ingredient['amount']
+            ) for ingredient in ingredients
+        ]
+        RecipeIngredients.objects.bulk_create(ingredients_data)
 
     def create(self, validated_data):
         request = self.context.get('request')
@@ -296,8 +314,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
-        context = self.context
-        return RecipeReadSerializer(instance, context=context).data
+        return RecipeReadSerializer(instance, context=self.context).data
 
 
 class FavoriteShoppingCartSerializer(serializers.ModelSerializer):
@@ -316,7 +333,7 @@ class FavoriteShoppingCartSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return RecipeShortSerializer(
             instance.recipe,
-            context={'request': self.context.get('request')}
+            context=self.context
         ).data
 
 

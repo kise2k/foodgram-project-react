@@ -9,7 +9,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from djoser.views import UserViewSet
+from djoser.views import UserViewSet as UserViewSetBase
 
 from recipes.models import (
     Cart,
@@ -92,7 +92,7 @@ class RecipeViewSet(ModelViewSet):
 
         for ingredient in ingredients_queryset:
             ingredients_dict[
-                ingredient['ingredient_name']
+                ingredient['name']
             ] += ingredient['amount']
 
         shopping_list = ['Список покупок:\n']
@@ -119,11 +119,11 @@ class RecipeViewSet(ModelViewSet):
         ingredients_queryset = RecipeIngredients.objects.filter(
             recipe__carts__user=request.user
         ).values(
-            ingredient_name=F('ingredients__name'),
+            name=F('ingredients__name'),
             measurement_unit=F('ingredients__measurement_unit')
         ).annotate(
             amount=Sum('amount')
-        ).order_by('ingredient_name')
+        ).order_by('name')
 
         shopping_list = self.make_shopping_list(ingredients_queryset)
 
@@ -188,7 +188,7 @@ class RecipeViewSet(ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserViewSet(UserViewSet):
+class UserViewSet(UserViewSetBase):
     """Вывод пользователей."""
 
     queryset = User.objects.all()

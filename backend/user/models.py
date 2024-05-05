@@ -3,7 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 from recipes.constants import FIELD_LEN_FOR_USER_MODEL, FIELD_LEN_EMAIL
-from .functions import validate_username
+from .validators import validate_username
 
 
 class User(AbstractUser):

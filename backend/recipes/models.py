@@ -121,7 +121,7 @@ class Recipe(Name):
 
 
 class RecipeIngredients(models.Model):
-    """Вспомогательный класс для модели Recipe"""
+    """Вспомогательный класс для модели Recipe."""
 
     recipe = models.ForeignKey(
         verbose_name='В каких рецептах',
